@@ -1,0 +1,8 @@
+Cluster:
+  region: us-east-1
+  cluster_name: prod
+
+project_name: zenrooms
+namespace: zenrooms-app
+domain: devapp.ecourts.ml
+react_app_base_url: https://devapp.ecourts.ml/api/
