@@ -1,0 +1,5 @@
+image: tanujdocker/fronted_app
+react_app_base_url: dummy
+namespace: dummy
+cpu: 250m
+memory: 64Mi

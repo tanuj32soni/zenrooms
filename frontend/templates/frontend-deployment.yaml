@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: frontend-app
+      tier: frontend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: frontend-app
+        tier: frontend
+        track: stable
+    spec:
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - backend-app
+            topologyKey: failure-domain.beta.kubernetes.io/zone
+      containers:
+      - name: frontend-app
+        image: {{ .Values.image }}
+        envFrom:
+        - configMapRef:
+            name: frontend-config
+        ports:
+          - name: http
+            containerPort: 5000
+        resources:
+          requests:
+            memory: {{ .Values.memory }}
+            cpu: {{ .Values.cpu }}
+          limits:
+            memory: {{ .Values.memory }}
+            cpu: {{ .Values.cpu }}
