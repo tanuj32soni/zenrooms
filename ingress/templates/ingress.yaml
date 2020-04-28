@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: zenrooms
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  labels:
+    app: zenrooms
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /api/*
+            backend:
+              serviceName: backend
+              servicePort: 80
+          - path: /healthcheck/*
+            backend:
+              serviceName: backend
+              servicePort: 80
+          - path: /*
+            backend:
+              serviceName: frontend
+              servicePort: 80

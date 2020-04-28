@@ -1,0 +1,18 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: letsencrypt-prod-cert
+  namespace: {{ .Values.namespace }}
+spec:
+  acme:
+    config:
+    - domains:
+      - {{ .Values.domain }}
+      http01:
+        ingress: zenrooms
+  commonName: {{ .Values.domain }}
+  dnsNames: []
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  secretName: letsencrypt-tls-crt
