@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: backend-app
+      tier: backend
+      track: stable
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: backend-app
+        tier: backend
+        track: stable
+    spec:
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - frontend-app
+            topologyKey: failure-domain.beta.kubernetes.io/zone
+      containers:
+        - name: backend-app
+          image: {{ .Values.image }}
+          ports:
+            - name: http
+              containerPort: 4000
+          resources:
+            requests:
+              memory: {{ .Values.memory }}
+              cpu: {{ .Values.cpu }}
+            limits:
+              memory: {{ .Values.memory }}
+              cpu: {{ .Values.cpu }}
+          readinessProbe:
+            httpGet:
+              port: 4000
+              path: /healthcheck
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              port: 4000
+              path: /healthcheck
+              scheme: HTTP
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 1
+            timeoutSeconds: 5
